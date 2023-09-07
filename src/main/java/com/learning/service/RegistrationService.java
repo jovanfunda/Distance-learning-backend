@@ -1,7 +1,7 @@
 package com.learning.service;
 
 import com.learning.httpMessages.RegistrationRequest;
-import com.learning.model.ERole;
+import com.learning.model.users.ERole;
 import com.learning.model.users.AppUser;
 import com.learning.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;

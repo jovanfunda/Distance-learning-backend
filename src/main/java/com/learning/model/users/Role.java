@@ -1,4 +1,4 @@
-package com.learning.model;
+package com.learning.model.users;
 
 import jakarta.persistence.*;
 import lombok.Data;

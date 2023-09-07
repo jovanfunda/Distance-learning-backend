@@ -1,7 +1,7 @@
 package com.learning;
 
-import com.learning.model.ERole;
-import com.learning.model.Role;
+import com.learning.model.users.ERole;
+import com.learning.model.users.Role;
 import com.learning.repository.AppUserRepository;
 import com.learning.repository.RoleRepository;
 import org.springframework.boot.CommandLineRunner;

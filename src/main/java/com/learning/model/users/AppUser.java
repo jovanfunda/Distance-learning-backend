@@ -1,6 +1,6 @@
 package com.learning.model.users;
 
-import com.learning.model.Role;
+import com.learning.model.courses.Course;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,8 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 @Entity
 @AllArgsConstructor
@@ -29,6 +28,17 @@ public class AppUser implements UserDetails {
 
     @ManyToOne
     private Role role;
+
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    private List<Course> ownCourses = new ArrayList<>();
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "user_listening_course",
+            joinColumns = @JoinColumn(name = "app_user_id"),
+            inverseJoinColumns = @JoinColumn(name = "course_id")
+    )
+    private Set<Course> courses = new HashSet<>();
 
     public AppUser(String firstName, String lastName, String email, String password, Role role) {
         this.firstName = firstName;

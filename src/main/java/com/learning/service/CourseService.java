@@ -3,9 +3,11 @@ package com.learning.service;
 import com.learning.configuration.JwtUtils;
 import com.learning.httpMessages.courses.CourseOwnershipRequest;
 import com.learning.model.courses.Course;
+import com.learning.model.courses.Enrollment;
 import com.learning.model.users.AppUser;
 import com.learning.repository.AppUserRepository;
 import com.learning.repository.CourseRepository;
+import com.learning.repository.EnrollmentRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ public class CourseService {
 
     private CourseRepository courseRepository;
     private AppUserRepository appUserRepository;
+    private EnrollmentRepository enrollmentRepository;
     private JwtUtils jwtUtils;
 
     public Long createCourse(String courseName) {
@@ -27,7 +30,8 @@ public class CourseService {
             return null;
         }
 
-        Course course = new Course(courseName);
+        Course course = new Course();
+        course.setName(courseName);
         course = courseRepository.save(course);
         return course.getId();
     }
@@ -49,20 +53,25 @@ public class CourseService {
         return true;
     }
 
-    public boolean startListening(String courseName) {
+    public boolean startEnrollment(String courseName) {
 
-        Optional<Course> course = courseRepository.findByName(courseName);
-        Optional<AppUser> user = appUserRepository.findByEmail(jwtUtils.getCurrentUsername());
+        Course course = courseRepository.findByName(courseName).orElse(null);
+        AppUser user = appUserRepository.findByEmail(jwtUtils.getCurrentUsername()).orElse(null);
 
-        if(course.isEmpty()) {
+        if(course == null) {
             // error, course not found
             return false;
-        } else if(user.isEmpty()) {
+        } else if(user == null) {
             // error, app user not found
             return false;
         }
 
-        user.get().getCourses().add(course.get());
+        Enrollment enrollment = new Enrollment();
+        enrollment.setStudent(user);
+        enrollment.setCourse(course);
+        enrollment.setScore(0);
+
+        enrollmentRepository.save(enrollment);
 
         return true;
     }

@@ -6,8 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -21,15 +21,11 @@ public class Course {
 
     private String name;
 
-    public Course(String name) {
-        this.name = name;
-    }
-
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "owner_id")
     private AppUser owner;
 
-    @ManyToMany(mappedBy = "courses") // Refers to the "courses" field in the Student entity
-    private Set<AppUser> listeners = new HashSet<>();
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL) // Refers to the "course" field in the Enrollment entity
+    private List<Enrollment> enrollment = new ArrayList<>();
 
 }

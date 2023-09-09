@@ -30,9 +30,9 @@ public class CourseController {
         return ResponseEntity.ok(isSuccessful);
     }
 
-    @PutMapping("/startListening")
-    public ResponseEntity<?> startListening(@RequestBody String courseName) {
-        boolean isSuccessful = courseService.startListening(courseName);
+    @PutMapping("/startEnrollment")
+    public ResponseEntity<?> startEnrollment(@RequestBody String courseName) {
+        boolean isSuccessful = courseService.startEnrollment(courseName);
         return ResponseEntity.ok(isSuccessful);
     }
 }

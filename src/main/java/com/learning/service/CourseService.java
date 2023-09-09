@@ -1,6 +1,8 @@
 package com.learning.service;
 
 import com.learning.configuration.JwtUtils;
+import com.learning.exception.AppUserNotFoundException;
+import com.learning.exception.CourseNotFoundException;
 import com.learning.httpMessages.courses.CourseOwnershipRequest;
 import com.learning.model.courses.Course;
 import com.learning.model.courses.Enrollment;
@@ -11,8 +13,6 @@ import com.learning.repository.EnrollmentRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -38,18 +38,16 @@ public class CourseService {
 
     public boolean changeOwnership(CourseOwnershipRequest request) {
 
-        Optional<Course> course = courseRepository.findByName(request.getCourseName());
-        Optional<AppUser> newOwner = appUserRepository.findByEmail(request.getNewOwnerEmail());
+        Course course = courseRepository.findByName(request.getCourseName()).orElse(null);
+        AppUser newOwner = appUserRepository.findByEmail(request.getNewOwnerEmail()).orElse(null);
 
-        if(course.isEmpty()) {
-            // error, course not found
-            return false;
-        } else if(newOwner.isEmpty()) {
-            // error, app user not found
-            return false;
+        if(course == null) {
+            throw new CourseNotFoundException(request.getCourseName());
+        } else if(newOwner == null) {
+            throw new AppUserNotFoundException(request.getNewOwnerEmail());
         }
 
-        course.get().setOwner(newOwner.get());
+        course.setOwner(newOwner);
         return true;
     }
 
@@ -59,11 +57,9 @@ public class CourseService {
         AppUser user = appUserRepository.findByEmail(jwtUtils.getCurrentUsername()).orElse(null);
 
         if(course == null) {
-            // error, course not found
-            return false;
+            throw new CourseNotFoundException(courseName);
         } else if(user == null) {
-            // error, app user not found
-            return false;
+            throw new AppUserNotFoundException(jwtUtils.getCurrentUsername());
         }
 
         Enrollment enrollment = new Enrollment();

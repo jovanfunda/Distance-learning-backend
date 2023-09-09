@@ -28,4 +28,7 @@ public class Course {
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL) // Refers to the "course" field in the Enrollment entity
     private List<Enrollment> enrollment = new ArrayList<>();
 
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Lecture> lectures = new ArrayList<>();
+
 }

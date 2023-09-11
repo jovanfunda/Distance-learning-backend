@@ -21,6 +21,10 @@ public class Course {
 
     private String name;
 
+    private String pictureURL;
+
+    private String description;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "owner_id")
     private AppUser owner;

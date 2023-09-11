@@ -16,6 +16,11 @@ public class CourseController {
 
     private final CourseService courseService;
 
+    @GetMapping
+    public ResponseEntity<?> getAllCoursesDAO() {
+        return ResponseEntity.ok(courseService.getAllCoursesDAO());
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<?> createCourse(@RequestBody String courseName) {

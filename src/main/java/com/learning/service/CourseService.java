@@ -4,8 +4,10 @@ import com.learning.configuration.JwtUtils;
 import com.learning.exception.AppUserNotFoundException;
 import com.learning.exception.CourseNotFoundException;
 import com.learning.httpMessages.courses.CourseOwnershipRequest;
+import com.learning.mappers.CourseMapper;
 import com.learning.model.courses.Course;
 import com.learning.model.courses.Enrollment;
+import com.learning.model.courses.dao.CourseDAO;
 import com.learning.model.users.AppUser;
 import com.learning.repository.AppUserRepository;
 import com.learning.repository.CourseRepository;
@@ -13,6 +15,9 @@ import com.learning.repository.EnrollmentRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -23,6 +28,11 @@ public class CourseService {
     private AppUserRepository appUserRepository;
     private EnrollmentRepository enrollmentRepository;
     private JwtUtils jwtUtils;
+    private CourseMapper courseMapper;
+
+    public List<CourseDAO> getAllCoursesDAO() {
+        return courseRepository.findAll().stream().map(courseMapper::toDto).collect(Collectors.toList());
+    }
 
     public Long createCourse(String courseName) {
 

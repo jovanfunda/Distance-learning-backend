@@ -2,7 +2,10 @@ package com.learning.service;
 
 import com.learning.configuration.AppConfig;
 import com.learning.configuration.JwtUtils;
+import com.learning.httpMessages.security.TokenResponse;
+import com.learning.model.courses.dao.UserDAO;
 import com.learning.model.users.AppUser;
+import com.learning.model.users.Role;
 import com.learning.repository.AppUserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +42,7 @@ public class AppUserService implements UserDetailsService {
     }
 
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return appUserRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Username with email " + email + " not found"));
+        return appUserRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User with email " + email + " not found"));
     }
 
     public AppUser signUpUser(AppUser appUser) {
@@ -56,8 +59,21 @@ public class AppUserService implements UserDetailsService {
         return appUserRepository.save(appUser);
     }
 
-    public String generateToken(String username) {
+    public TokenResponse generateToken(String username) {
+
+        TokenResponse tokenResponse = new TokenResponse();
         UserDetails userDetails = loadUserByUsername(username);
-        return jwtUtils.generateToken(userDetails);
+
+        tokenResponse.setToken(jwtUtils.generateToken(userDetails));
+        UserDAO user = new UserDAO();
+
+        AppUser appUser = appUserRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User with email " + username + " not found!"));
+        user.setEmail(username);
+        user.setRole(appUser.getRole().getName());
+        user.setFullName(appUser.getFirstName() + " " + appUser.getLastName());
+
+        tokenResponse.setUser(user);
+
+        return tokenResponse;
     }
 }

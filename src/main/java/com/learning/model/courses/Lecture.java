@@ -19,8 +19,7 @@ public class Lecture {
     private String title;
     private String videoUrl;
 
-    @Lob
-    private String lectureDesc;
+    private String data;
 
     @ManyToOne
     @JoinColumn(name = "course_id")

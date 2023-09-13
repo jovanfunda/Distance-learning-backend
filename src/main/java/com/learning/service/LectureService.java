@@ -4,11 +4,14 @@ import com.learning.exception.CourseNotFoundException;
 import com.learning.httpMessages.courses.LectureCreationRequest;
 import com.learning.model.courses.Course;
 import com.learning.model.courses.Lecture;
+import com.learning.model.courses.dao.LectureDAO;
 import com.learning.repository.CourseRepository;
 import com.learning.repository.LectureRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -25,11 +28,14 @@ public class LectureService {
         Lecture lecture = new Lecture();
         lecture.setTitle(request.title);
         lecture.setVideoUrl(request.videoUrl);
-        lecture.setLectureDesc(request.lectureDesc);
+        lecture.setData(request.data);
         lecture.setCourse(course);
         lectureRepository.save(lecture);
         return true;
     }
 
-
+    public List<LectureDAO> getLecturesByCourseID(Long courseID) {
+        courseRepository.findById(courseID).orElseThrow(() -> new CourseNotFoundException("Course with ID " + courseID + " not found!"));
+        return lectureRepository.findLectureByCourseID(courseID);
+    }
 }

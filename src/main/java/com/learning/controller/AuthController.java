@@ -26,8 +26,8 @@ public class AuthController {
     @RequestMapping("/login")
     public ResponseEntity<TokenResponse> authenticate(@RequestBody TokenRequest tokenRequest) {
         authenticate(tokenRequest.email, tokenRequest.password);
-        String token = securityService.generateToken(tokenRequest.getEmail());
-        return new ResponseEntity<>(new TokenResponse(token), HttpStatus.OK);
+        TokenResponse tokenResponse = securityService.generateToken(tokenRequest.getEmail());
+        return new ResponseEntity<>(tokenResponse, HttpStatus.OK);
     }
 
     private void authenticate(String username, String password) {

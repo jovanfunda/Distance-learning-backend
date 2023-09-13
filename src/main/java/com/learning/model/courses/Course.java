@@ -21,6 +21,7 @@ public class Course {
 
     private String name;
 
+    @Column(name = "picture_url")
     private String pictureURL;
 
     private String description;

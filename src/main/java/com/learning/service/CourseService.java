@@ -34,6 +34,18 @@ public class CourseService {
         return courseRepository.findAll().stream().map(courseMapper::toDto).collect(Collectors.toList());
     }
 
+    public List<CourseDAO> getMyCoursesDAO() {
+        AppUser user = appUserRepository.findByEmail(jwtUtils.getCurrentUsername()).get();
+        Long userID = user.getId();
+        List<Long> allCourseIDs = courseRepository.findMyCourses(userID);
+        List<Course> getAllCourses = courseRepository.findAllById(allCourseIDs);
+        return getAllCourses.stream().map(courseMapper::toDto).collect(Collectors.toList());
+    }
+
+    public CourseDAO getCourse(Long courseID) {
+        return courseMapper.toDto(courseRepository.findById(courseID).get());
+    }
+
     public Long createCourse(String courseName) {
 
         if(courseRepository.findByName(courseName).isPresent()) {

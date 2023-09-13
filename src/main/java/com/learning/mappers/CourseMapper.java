@@ -12,10 +12,14 @@ public class CourseMapper {
     public CourseDAO toDto(Course entity) {
         if(entity==null)return null;
         CourseDAO dao = new CourseDAO();
+        dao.id = entity.getId();
         dao.name = entity.getName();
-        dao.fullOwnerName = entity.getOwner().getFirstName() + " " + entity.getOwner().getLastName();
-        dao.pictureURL = entity.getPictureURL();
-        dao.description = entity.getDescription();
+        if(entity.getOwner() != null)
+            dao.fullOwnerName = entity.getOwner().getFirstName() + " " + entity.getOwner().getLastName();
+        if(entity.getPictureURL() != null)
+            dao.pictureURL = entity.getPictureURL();
+        if(entity.getDescription() != null)
+            dao.description = entity.getDescription();
         return dao;
     }
 }

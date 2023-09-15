@@ -14,9 +14,11 @@ import com.learning.repository.CourseRepository;
 import com.learning.repository.EnrollmentRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,9 +37,17 @@ public class CourseService {
     }
 
     public List<CourseDAO> getMyCoursesDAO() {
-        AppUser user = appUserRepository.findByEmail(jwtUtils.getCurrentUsername()).get();
+        AppUser user = appUserRepository.findByEmail(jwtUtils.getCurrentUsername()).orElseThrow(() -> new UsernameNotFoundException("User " + jwtUtils.getCurrentUsername() + " not found!"));
         Long userID = user.getId();
         List<Long> allCourseIDs = courseRepository.findMyCourses(userID);
+        List<Course> getAllCourses = courseRepository.findAllById(allCourseIDs);
+        return getAllCourses.stream().map(courseMapper::toDto).collect(Collectors.toList());
+    }
+
+    public List<CourseDAO> getMyOwnCoursesDAO() {
+        AppUser user = appUserRepository.findByEmail(jwtUtils.getCurrentUsername()).orElseThrow(() -> new UsernameNotFoundException("User " + jwtUtils.getCurrentUsername() + " not found!"));
+        Long userID = user.getId();
+        List<Long> allCourseIDs = courseRepository.findMyOwnCourses(userID);
         List<Course> getAllCourses = courseRepository.findAllById(allCourseIDs);
         return getAllCourses.stream().map(courseMapper::toDto).collect(Collectors.toList());
     }
@@ -46,7 +56,7 @@ public class CourseService {
         return courseMapper.toDto(courseRepository.findById(courseID).get());
     }
 
-    public Long createCourse(String courseName) {
+    public Course createCourse(String courseName) {
 
         if(courseRepository.findByName(courseName).isPresent()) {
             return null;
@@ -55,7 +65,17 @@ public class CourseService {
         Course course = new Course();
         course.setName(courseName);
         course = courseRepository.save(course);
-        return course.getId();
+        return course;
+    }
+
+    public boolean deleteCourse(Long courseID) {
+        Optional<Course> course = courseRepository.findById(courseID);
+        if(course.isEmpty()) {
+            return false;
+        } else {
+            courseRepository.delete(course.get());
+            return true;
+        }
     }
 
     public boolean changeOwnership(CourseOwnershipRequest request) {

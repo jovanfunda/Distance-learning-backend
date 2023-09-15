@@ -1,5 +1,6 @@
 package com.learning.model.users;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.learning.model.courses.Course;
 import com.learning.model.courses.Enrollment;
 import jakarta.persistence.*;
@@ -26,14 +27,18 @@ public class AppUser implements UserDetails {
     private String firstName;
     private String lastName;
     private String email;
+
+    @JsonIgnore
     private String password;
 
     @ManyToOne
     private Role role;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<Course> ownCourses = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<Enrollment> enrollments = new ArrayList<>();
 

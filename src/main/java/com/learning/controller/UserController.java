@@ -4,7 +4,6 @@ import com.learning.model.users.AppUser;
 import com.learning.service.AppUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -23,6 +22,16 @@ public class UserController {
         return ResponseEntity.ok().body(userService.getUsers());
     }
 
+    @GetMapping("/admin")
+    public ResponseEntity<List<AppUser>> getAdmins() {
+        return ResponseEntity.ok().body(userService.getAdmins());
+    }
+
+    @GetMapping("/regularUsers")
+    public ResponseEntity<?> getRegularUsers() {
+        return ResponseEntity.ok().body(userService.getRegularUsers());
+    }
+
     @PostMapping("/student/save")
     public ResponseEntity<AppUser> saveUser(@RequestBody AppUser appUser) {
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/student/save").toUriString());
@@ -34,10 +43,13 @@ public class UserController {
         return ResponseEntity.ok().body(userService.getUser(userID));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/user/{userID}")
-    public ResponseEntity<?> deleteUser(@RequestParam Long userID) {
-        userService.deleteUser(userID);
-        return ResponseEntity.ok().build();
+    @PutMapping("/removeAdmin")
+    public ResponseEntity<?> removeAdminPermission(@RequestBody String email) {
+        return ResponseEntity.ok().body(userService.removeAdminPermission(email));
+    }
+
+    @PutMapping("/promoteToAdmin")
+    public ResponseEntity<?> promoteToAdmin(@RequestBody String email) {
+        return ResponseEntity.ok().body(userService.promoteToAdmin(email));
     }
 }

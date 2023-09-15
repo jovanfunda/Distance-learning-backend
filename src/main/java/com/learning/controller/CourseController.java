@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 
 @RestController
 @RequestMapping("/api/course")
@@ -26,6 +25,14 @@ public class CourseController {
         return ResponseEntity.ok(courseService.getMyCoursesDAO());
     }
 
+    @GetMapping("/myOwnCourses")
+    public ResponseEntity<?> getMyOwnCoursesDAO() { return ResponseEntity.ok(courseService.getMyOwnCoursesDAO());}
+
+    @DeleteMapping("/delete/{courseID}")
+    public ResponseEntity<?> deleteCourse(@PathVariable Long courseID) {
+        return ResponseEntity.ok(courseService.deleteCourse(courseID));
+    }
+
     @GetMapping("/{courseID}")
     public ResponseEntity<?> getCourse(@PathVariable Long courseID) {
         return ResponseEntity.ok(courseService.getCourse(courseID));
@@ -34,8 +41,7 @@ public class CourseController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<?> createCourse(@RequestBody String courseName) {
-        Long courseID = courseService.createCourse(courseName);
-        return ResponseEntity.created(URI.create("/api/course/" + courseID)).build();
+        return ResponseEntity.ok(courseService.createCourse(courseName));
     }
 
     @PreAuthorize("hasRole('ADMIN')")

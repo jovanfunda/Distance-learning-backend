@@ -17,6 +17,8 @@ public class Lecture {
     Long id;
 
     private String title;
+
+    @Column(columnDefinition = "TEXT")
     private String videoUrl;
 
     private String data;

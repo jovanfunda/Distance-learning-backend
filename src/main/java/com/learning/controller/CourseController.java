@@ -3,6 +3,7 @@ package com.learning.controller;
 import com.learning.httpMessages.courses.CourseOwnershipRequest;
 import com.learning.service.CourseService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,7 @@ public class CourseController {
     @GetMapping("/myOwnCourses")
     public ResponseEntity<?> getMyOwnCoursesDAO() { return ResponseEntity.ok(courseService.getMyOwnCoursesDAO());}
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{courseID}")
     public ResponseEntity<?> deleteCourse(@PathVariable Long courseID) {
         return ResponseEntity.ok(courseService.deleteCourse(courseID));
@@ -40,6 +42,7 @@ public class CourseController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create")
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> createCourse(@RequestBody String courseName) {
         return ResponseEntity.ok(courseService.createCourse(courseName));
     }

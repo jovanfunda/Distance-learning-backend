@@ -3,6 +3,7 @@ package com.learning.controller;
 import com.learning.model.users.AppUser;
 import com.learning.service.AppUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -33,6 +34,7 @@ public class UserController {
     }
 
     @PostMapping("/student/save")
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<AppUser> saveUser(@RequestBody AppUser appUser) {
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/student/save").toUriString());
         return ResponseEntity.created(uri).body(userService.saveUser(appUser));

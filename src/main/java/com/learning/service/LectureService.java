@@ -21,7 +21,7 @@ public class LectureService {
     private final LectureRepository lectureRepository;
     private final CourseRepository courseRepository;
 
-    public boolean createLecture(LectureCreationRequest request) {
+    public Lecture createLecture(LectureCreationRequest request) {
 
         Course course = courseRepository.findByName(request.course).orElseThrow(() -> new CourseNotFoundException("Course with name " + request.course + " not found!"));
 
@@ -30,8 +30,7 @@ public class LectureService {
         lecture.setVideoUrl(request.videoUrl);
         lecture.setData(request.data);
         lecture.setCourse(course);
-        lectureRepository.save(lecture);
-        return true;
+        return lectureRepository.save(lecture);
     }
 
     public List<LectureDAO> getLecturesByCourseID(Long courseID) {

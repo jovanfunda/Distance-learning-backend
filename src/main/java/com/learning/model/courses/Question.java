@@ -11,9 +11,9 @@ public class Question {
     @GeneratedValue
     public Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "course_id")
-    public Course course;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "test_id")
+    public Test test;
 
     public String question;
     public String rightAnswer;

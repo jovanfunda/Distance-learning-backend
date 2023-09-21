@@ -7,5 +7,6 @@ import java.util.List;
 public class CreateTestRequest {
 
     public Long courseID;
+    public String name;
     public List<QuestionDAO> questions;
 }

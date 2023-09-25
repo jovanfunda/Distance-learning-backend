@@ -18,14 +18,16 @@ public class LectureController {
     private final LectureService lectureService;
 
     @PostMapping("/create")
-    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> createLecture(@RequestBody LectureCreationRequest request) {
-        return ResponseEntity.ok(lectureService.createLecture(request));
+        return new ResponseEntity<>(lectureService.createLecture(request), HttpStatus.CREATED);
     }
 
     @GetMapping("/{courseID}")
     public ResponseEntity<?> getLecturesByCourseID(@PathVariable Long courseID) {
         List<LectureDAO> lectures = lectureService.getLecturesByCourseID(courseID);
-        return ResponseEntity.ok(lectures);
+        if(lectures.isEmpty()) {
+            return new ResponseEntity<>("Course has no lectures", HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(lectures, HttpStatus.OK);
     }
 }

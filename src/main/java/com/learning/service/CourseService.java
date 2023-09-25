@@ -1,7 +1,8 @@
 package com.learning.service;
 
 import com.learning.configuration.JwtUtils;
-import com.learning.exception.AppUserNotFoundException;
+import com.learning.exception.CourseAlreadyExistsException;
+import com.learning.exception.UserNotFoundException;
 import com.learning.exception.CourseNotFoundException;
 import com.learning.httpMessages.courses.CourseOwnershipRequest;
 import com.learning.mappers.CourseMapper;
@@ -38,79 +39,71 @@ public class CourseService {
 
     public List<CourseDAO> getMyCoursesDAO() {
         AppUser user = appUserRepository.findByEmail(jwtUtils.getCurrentUsername()).orElseThrow(() -> new UsernameNotFoundException("User " + jwtUtils.getCurrentUsername() + " not found!"));
-        Long userID = user.getId();
-        List<Long> allCourseIDs = courseRepository.findMyCourses(userID);
+        List<Long> allCourseIDs = enrollmentRepository.findMyCourses(user.getId());
         List<Course> getAllCourses = courseRepository.findAllById(allCourseIDs);
         return getAllCourses.stream().map(courseMapper::toDto).collect(Collectors.toList());
     }
 
     public List<CourseDAO> getMyOwnCoursesDAO() {
         AppUser user = appUserRepository.findByEmail(jwtUtils.getCurrentUsername()).orElseThrow(() -> new UsernameNotFoundException("User " + jwtUtils.getCurrentUsername() + " not found!"));
-        Long userID = user.getId();
-        List<Long> allCourseIDs = courseRepository.findMyOwnCourses(userID);
-        List<Course> getAllCourses = courseRepository.findAllById(allCourseIDs);
+        List<Course> getAllCourses = courseRepository.findCoursesByOwnerId(user.getId());
         return getAllCourses.stream().map(courseMapper::toDto).collect(Collectors.toList());
     }
 
     public CourseDAO getCourse(Long courseID) {
+        Optional<Course> course = courseRepository.findById(courseID);
+        if(course.isEmpty())
+            throw new CourseNotFoundException(courseID.toString());
         return courseMapper.toDto(courseRepository.findById(courseID).get());
     }
 
     public Course createCourse(String courseName) {
 
         if(courseRepository.findByName(courseName).isPresent()) {
-            return null;
+            throw new CourseAlreadyExistsException(courseName);
         }
 
         Course course = new Course();
         course.setName(courseName);
-        course = courseRepository.save(course);
-        return course;
+        return courseRepository.save(course);
     }
 
-    public boolean deleteCourse(Long courseID) {
+    public void deleteCourse(Long courseID) {
         Optional<Course> course = courseRepository.findById(courseID);
-        if(course.isEmpty()) {
-            return false;
-        } else {
-            courseRepository.delete(course.get());
-            return true;
-        }
+        course.ifPresent(value -> courseRepository.delete(value));
     }
 
-    public boolean changeOwnership(CourseOwnershipRequest request) {
+    public void changeOwnership(CourseOwnershipRequest request) {
 
-        Course course = courseRepository.findByName(request.getCourseName()).orElse(null);
-        AppUser newOwner = appUserRepository.findByEmail(request.getNewOwnerEmail()).orElse(null);
+        Optional<Course> course = courseRepository.findByName(request.getCourseName());
+        Optional<AppUser> newOwner = appUserRepository.findByEmail(request.getNewOwnerEmail());
 
-        if(course == null) {
+        if(course.isEmpty() ) {
             throw new CourseNotFoundException(request.getCourseName());
-        } else if(newOwner == null) {
-            throw new AppUserNotFoundException(request.getNewOwnerEmail());
+        } else if(newOwner.isEmpty()) {
+            throw new UserNotFoundException(request.getNewOwnerEmail());
         }
 
-        course.setOwner(newOwner);
-        return true;
+        course.get().setOwner(newOwner.get());
     }
 
-    public boolean startEnrollment(String courseName) {
+    public void startEnrollment(String courseName) {
 
-        Course course = courseRepository.findByName(courseName).orElse(null);
-        AppUser user = appUserRepository.findByEmail(jwtUtils.getCurrentUsername()).orElse(null);
+        Optional<Course> course = courseRepository.findByName(courseName);
+        Optional<AppUser> user = appUserRepository.findByEmail(jwtUtils.getCurrentUsername());
 
-        if(course == null) {
+        if(course.isEmpty()) {
             throw new CourseNotFoundException(courseName);
-        } else if(user == null) {
-            throw new AppUserNotFoundException(jwtUtils.getCurrentUsername());
+        } else if(user.isEmpty()) {
+            throw new UserNotFoundException(jwtUtils.getCurrentUsername());
         }
 
         Enrollment enrollment = new Enrollment();
-        enrollment.setStudent(user);
-        enrollment.setCourse(course);
+        enrollment.setStudent(user.get());
+        enrollment.setCourse(course.get());
         enrollment.setScore(0);
 
         enrollmentRepository.save(enrollment);
 
-        return true;
     }
 }

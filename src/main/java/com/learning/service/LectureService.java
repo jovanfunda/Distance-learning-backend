@@ -21,7 +21,7 @@ public class LectureService {
     private final LectureRepository lectureRepository;
     private final CourseRepository courseRepository;
 
-    public Lecture createLecture(LectureCreationRequest request) {
+    public Lecture createLecture(LectureCreationRequest request) throws CourseNotFoundException{
 
         Course course = courseRepository.findByName(request.course).orElseThrow(() -> new CourseNotFoundException("Course with name " + request.course + " not found!"));
 

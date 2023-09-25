@@ -9,8 +9,4 @@ public class CantParseJwtException extends RuntimeException{
     public CantParseJwtException(String message) {
         super(message);
     }
-
-    public CantParseJwtException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }

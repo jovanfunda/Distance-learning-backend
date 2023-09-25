@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -24,12 +26,18 @@ public class TestService {
 
     public Test createTest(CreateTestRequest request) {
         Course course = courseRepository.findById(request.courseID).orElseThrow(() -> new CourseNotFoundException("Course with ID " + request.courseID + " not found!"));
+
         Test test = new Test();
         test.setCourse(course);
         test.setName(request.name);
         testRepository.save(test);
+        saveQuestions(test, request.questions);
 
-        for(QuestionDAO q : request.questions) {
+        return test;
+    }
+
+    public void saveQuestions(Test test, List<QuestionDAO> questions) {
+        for(QuestionDAO q : questions) {
             Question question = new Question();
             question.setTest(test);
             question.setQuestion(q.question);
@@ -39,7 +47,9 @@ public class TestService {
             question.setWrongAnswer3(q.wrongAnswer3);
             questionRepository.save(question);
         }
+    }
 
-        return test;
+    public List<Question> getTestQuestions(Long testID) {
+        return questionRepository.findQuestionsByTestId(testID);
     }
 }

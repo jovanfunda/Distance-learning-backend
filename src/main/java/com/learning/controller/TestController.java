@@ -15,9 +15,13 @@ public class TestController {
     private final TestService testService;
 
     @PostMapping("/create")
-    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> createTestForCourse(@RequestBody CreateTestRequest request) {
-        return ResponseEntity.ok(testService.createTest(request));
+        return new ResponseEntity<>(testService.createTest(request), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{testID}")
+    public ResponseEntity<?> getTestQuestions(@PathVariable Long testID) {
+        return new ResponseEntity<>(testService.getTestQuestions(testID), HttpStatus.OK);
     }
 
 }

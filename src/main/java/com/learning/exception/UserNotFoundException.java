@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-public class AppUserNotFoundException extends RuntimeException {
+public class UserNotFoundException extends RuntimeException {
 
-    public AppUserNotFoundException(String message) {
-        super(message);
+    public UserNotFoundException(String message) {
+        super("User with email " + message + " does not exist");
     }
 }

@@ -1,9 +1,11 @@
 package com.learning.controller;
 
 import com.learning.httpMessages.RegistrationRequest;
-import com.learning.model.users.AppUser;
-import com.learning.service.RegistrationService;
+import com.learning.model.users.ERole;
+import com.learning.service.AuthService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,15 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class RegistrationController {
 
-    private final RegistrationService registrationService;
+    private final AuthService authService;
 
     @PostMapping
-    public AppUser registerUser(@RequestBody RegistrationRequest request) {
-        return registrationService.registerUser(request);
+    public ResponseEntity<?> registerUser(@RequestBody RegistrationRequest request) {
+        return new ResponseEntity<>(authService.register(request, ERole.ROLE_REGULAR), HttpStatus.CREATED);
     }
 
     @PostMapping("/admin")
-    public AppUser registerAdmin(@RequestBody RegistrationRequest request) {
-        return registrationService.registerAdmin(request);
+    public ResponseEntity<?> registerAdmin(@RequestBody RegistrationRequest request) {
+        return new ResponseEntity<>(authService.register(request, ERole.ROLE_ADMIN), HttpStatus.CREATED);
     }
 }

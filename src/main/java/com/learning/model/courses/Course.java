@@ -38,6 +38,6 @@ public class Course {
     private List<Lecture> lectures = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Test> tests = new ArrayList<>();
+    @OneToOne(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Test test;
 }

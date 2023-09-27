@@ -1,16 +1,21 @@
 package com.learning.service;
 
+import com.learning.configuration.JwtUtils;
 import com.learning.exception.CourseNotFoundException;
 import com.learning.exception.TestAlreadyExistsException;
+import com.learning.httpMessages.SubmitScoreRequest;
 import com.learning.httpMessages.courses.CreateTestRequest;
 import com.learning.model.courses.Course;
 import com.learning.model.courses.Question;
 import com.learning.model.courses.Test;
 import com.learning.model.courses.dao.QuestionDAO;
+import com.learning.model.users.AppUser;
+import com.learning.repository.AppUserRepository;
 import com.learning.repository.CourseRepository;
 import com.learning.repository.QuestionRepository;
 import com.learning.repository.TestRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,8 +31,10 @@ public class TestService {
     private final QuestionRepository questionRepository;
     private final CourseRepository courseRepository;
     private final TestRepository testRepository;
+    private final AppUserRepository appUserRepository;
+    private final JwtUtils jwtUtils;
 
-    public List<Test> getAllTestsWithinCourse(Long courseID) {
+    public Test getTestWithinCourse(Long courseID) {
         courseRepository.findById(courseID).orElseThrow(() -> new CourseNotFoundException(courseID.toString()));
         return testRepository.findByCourseId(courseID);
     }
@@ -65,5 +72,12 @@ public class TestService {
 
     public List<Question> getTestQuestions(Long testID) {
         return questionRepository.findQuestionsByTestId(testID);
+    }
+
+    public void submitScore(SubmitScoreRequest request) {
+        Long courseID = testRepository.findCourseIdByTestId(request.testID);
+        courseRepository.findById(courseID).orElseThrow(() -> new CourseNotFoundException(courseID.toString()));
+        AppUser user = appUserRepository.findByEmail(jwtUtils.getCurrentUsername()).orElseThrow(() -> new UsernameNotFoundException(jwtUtils.getCurrentUsername()));
+        testRepository.submitScore(courseID, request.score, user.getId());
     }
 }

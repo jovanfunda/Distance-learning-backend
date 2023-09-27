@@ -1,5 +1,6 @@
 package com.learning.controller;
 
+import com.learning.httpMessages.SubmitScoreRequest;
 import com.learning.httpMessages.courses.CreateTestRequest;
 import com.learning.model.courses.Question;
 import com.learning.model.courses.Test;
@@ -24,8 +25,8 @@ public class TestController {
     }
 
     @GetMapping("/{courseID}")
-    public ResponseEntity<List<Test>> getAllTestsWithinCourse(@PathVariable Long courseID) {
-        return new ResponseEntity<>(testService.getAllTestsWithinCourse(courseID), HttpStatus.OK);
+    public ResponseEntity<Test> getTestWithinCourse(@PathVariable Long courseID) {
+        return new ResponseEntity<>(testService.getTestWithinCourse(courseID), HttpStatus.OK);
     }
 
     @GetMapping("/questions/{testID}")
@@ -33,4 +34,9 @@ public class TestController {
         return new ResponseEntity<>(testService.getTestQuestions(testID), HttpStatus.OK);
     }
 
+    @PutMapping("/submitScore")
+    public ResponseEntity<?> submitScore(@RequestBody SubmitScoreRequest request) {
+        testService.submitScore(request);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

@@ -22,7 +22,7 @@ public class Test {
     public String name;
 
     @JsonIgnore
-    @ManyToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "course_id")
     public Course course;
 

@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Course {
 
     @Id
@@ -22,7 +22,7 @@ public class Course {
 
     private String name;
 
-    @Column(name = "picture_url")
+    @Column(name = "picture_url", columnDefinition = "TEXT")
     private String pictureURL;
 
     private String description;

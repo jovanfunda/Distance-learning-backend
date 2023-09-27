@@ -4,7 +4,7 @@ public class LectureCreationRequest {
 
     public String course;
     public String title;
-    public String videoUrl;
+    public String videoURL;
     public String data;
 
 }

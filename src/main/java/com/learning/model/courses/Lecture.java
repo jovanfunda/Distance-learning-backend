@@ -18,8 +18,8 @@ public class Lecture {
 
     private String title;
 
-    @Column(columnDefinition = "TEXT")
-    private String videoUrl;
+    @Column(name="video_url", columnDefinition = "TEXT")
+    private String videoURL;
 
     private String data;
 

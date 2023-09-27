@@ -14,9 +14,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.*;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class AppUser implements UserDetails {
 
     @Id

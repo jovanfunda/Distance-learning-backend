@@ -4,6 +4,7 @@ import com.learning.configuration.JwtUtils;
 import com.learning.exception.CourseAlreadyExistsException;
 import com.learning.exception.UserNotFoundException;
 import com.learning.exception.CourseNotFoundException;
+import com.learning.httpMessages.courses.CourseChangeDataRequest;
 import com.learning.httpMessages.courses.CourseOwnershipRequest;
 import com.learning.mappers.CourseMapper;
 import com.learning.model.courses.Course;
@@ -46,8 +47,8 @@ public class CourseService {
 
     public List<CourseDAO> getMyOwnCoursesDAO() {
         AppUser user = appUserRepository.findByEmail(jwtUtils.getCurrentUsername()).orElseThrow(() -> new UsernameNotFoundException("User " + jwtUtils.getCurrentUsername() + " not found!"));
-        List<Course> getAllCourses = courseRepository.findCoursesByOwnerId(user.getId());
-        return getAllCourses.stream().map(courseMapper::toDto).collect(Collectors.toList());
+        List<Course> allCourses = courseRepository.findCoursesByOwnerId(user.getId());
+        return allCourses.stream().map(courseMapper::toDto).collect(Collectors.toList());
     }
 
     public CourseDAO getCourse(Long courseID) {
@@ -104,6 +105,12 @@ public class CourseService {
         enrollment.setScore(0);
 
         enrollmentRepository.save(enrollment);
+    }
 
+    public CourseDAO changeData(CourseChangeDataRequest request) {
+        Course course = courseRepository.findById(request.courseID).orElseThrow(() -> new CourseNotFoundException(request.courseID.toString()));
+        course.setDescription(request.courseDescription);
+        course.setPictureURL(request.coursePictureURL);
+        return courseMapper.toDto(course);
     }
 }

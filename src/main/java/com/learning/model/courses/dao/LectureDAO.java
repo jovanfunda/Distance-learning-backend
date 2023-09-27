@@ -4,12 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class LectureDAO {
     public Long id;
     public String title;
-    public String videoUrl;
+    public String videoURL;
     public String data;
 }

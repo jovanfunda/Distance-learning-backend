@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface LectureRepository extends JpaRepository<Lecture, Long> {
 
-    @Query("SELECT NEW com.learning.model.courses.dao.LectureDAO(l.id, l.title, l.videoUrl, l.data) FROM Lecture l WHERE l.course.id = :course_id")
+    @Query("SELECT NEW com.learning.model.courses.dao.LectureDAO(l.id, l.title, l.videoURL, l.data) FROM Lecture l WHERE l.course.id = :course_id")
     List<LectureDAO> findLectureByCourseID(@Param("course_id") Long course_id);
 
 }

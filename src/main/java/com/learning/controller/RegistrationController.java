@@ -1,6 +1,7 @@
 package com.learning.controller;
 
 import com.learning.httpMessages.RegistrationRequest;
+import com.learning.model.users.AppUser;
 import com.learning.model.users.ERole;
 import com.learning.service.AuthService;
 import lombok.AllArgsConstructor;
@@ -20,12 +21,12 @@ public class RegistrationController {
     private final AuthService authService;
 
     @PostMapping
-    public ResponseEntity<?> registerUser(@RequestBody RegistrationRequest request) {
+    public ResponseEntity<AppUser> registerUser(@RequestBody RegistrationRequest request) {
         return new ResponseEntity<>(authService.register(request, ERole.ROLE_REGULAR), HttpStatus.CREATED);
     }
 
     @PostMapping("/admin")
-    public ResponseEntity<?> registerAdmin(@RequestBody RegistrationRequest request) {
+    public ResponseEntity<AppUser> registerAdmin(@RequestBody RegistrationRequest request) {
         return new ResponseEntity<>(authService.register(request, ERole.ROLE_ADMIN), HttpStatus.CREATED);
     }
 }

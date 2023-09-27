@@ -1,6 +1,7 @@
 package com.learning.service;
 
 import com.learning.exception.CourseNotFoundException;
+import com.learning.exception.TestAlreadyExistsException;
 import com.learning.httpMessages.courses.CreateTestRequest;
 import com.learning.model.courses.Course;
 import com.learning.model.courses.Question;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +27,19 @@ public class TestService {
     private final CourseRepository courseRepository;
     private final TestRepository testRepository;
 
+    public List<Test> getAllTestsWithinCourse(Long courseID) {
+        courseRepository.findById(courseID).orElseThrow(() -> new CourseNotFoundException(courseID.toString()));
+        return testRepository.findByCourseId(courseID);
+    }
+
     public Test createTest(CreateTestRequest request) {
-        Course course = courseRepository.findById(request.courseID).orElseThrow(() -> new CourseNotFoundException("Course with ID " + request.courseID + " not found!"));
+        Course course = courseRepository.findById(request.courseID).orElseThrow(() -> new CourseNotFoundException(request.courseID.toString()));
+        Optional<Test> testOpt = testRepository.findByName(request.name);
+
+        if(testOpt.isPresent()) {
+            if(Objects.equals(testOpt.get().course.getId(), request.courseID))
+                throw new TestAlreadyExistsException(request.name);
+        }
 
         Test test = new Test();
         test.setCourse(course);

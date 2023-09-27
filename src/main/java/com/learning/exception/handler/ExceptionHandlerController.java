@@ -20,13 +20,18 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler({
             UserNotFoundException.class,
-            UserAlreadyExistsException.class,
             CourseNotFoundException.class,
-            CourseAlreadyExistsException.class
     })
-    public ResponseEntity<?> handleCustomExceptions(Exception exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> handleNotFoundExceptions(Exception exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-
+    @ExceptionHandler({
+            CourseAlreadyExistsException.class,
+            TestAlreadyExistsException.class,
+            UserAlreadyExistsException.class
+    })
+    public ResponseEntity<?> handleConflictExceptions(Exception exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
+    }
 }

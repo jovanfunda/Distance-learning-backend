@@ -11,7 +11,6 @@ import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -22,7 +21,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -40,7 +38,7 @@ public class JwtUtils {
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList()));
-        return generateToken(claims, ((AppUser) userDetails).getEmail());
+        return generateToken(claims, userDetails.getUsername());
     }
 
     public String getUsernameFromToken(String jwtToken) throws CantParseJwtException {
@@ -76,13 +74,6 @@ public class JwtUtils {
         }
     }
 
-    public List<GrantedAuthority> getAuthoritiesFromToken(String jwtToken) throws CantParseJwtException {
-        List<String> permissions = getClaimFromToken(jwtToken, claims -> claims.get("permissions", List.class));
-        return permissions.stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
-    }
-
     public java.util.Date getExpirationDateFromToken(String token) throws CantParseJwtException {
         return getClaimFromToken(token, Claims::getExpiration);
     }
@@ -100,7 +91,7 @@ public class JwtUtils {
 
     private Boolean isTokenExpired(String token) throws CantParseJwtException {
         Instant instant = Instant.now();
-        final java.util.Date expiration = getExpirationDateFromToken(token);
+        final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(Date.from(instant));
     }
 
@@ -112,7 +103,7 @@ public class JwtUtils {
     public String getCurrentUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
-            return authentication.getName(); // Retrieves the username from the authentication object
+            return authentication.getName();
         }
         return null;
     }

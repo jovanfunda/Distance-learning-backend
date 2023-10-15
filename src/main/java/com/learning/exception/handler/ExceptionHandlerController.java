@@ -29,7 +29,6 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler({
             CourseAlreadyExistsException.class,
-            TestAlreadyExistsException.class,
             UserAlreadyExistsException.class
     })
     public ResponseEntity<?> handleConflictExceptions(Exception exception) {

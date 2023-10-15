@@ -33,11 +33,6 @@ public class UserController {
         return new ResponseEntity<>(userService.getRegularUsers(), HttpStatus.OK);
     }
 
-    @PostMapping("/student/save")
-    public ResponseEntity<AppUser> saveUser(@RequestBody AppUser appUser) {
-        return new ResponseEntity<>(userService.saveUser(appUser), HttpStatus.CREATED);
-    }
-
     @GetMapping("/user/{userID}")
     public ResponseEntity<AppUser> getUser(@PathVariable Long userID) {
         return new ResponseEntity<>(userService.getUser(userID), HttpStatus.OK);

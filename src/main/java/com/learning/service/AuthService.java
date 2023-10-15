@@ -31,16 +31,16 @@ public class AuthService {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.email, request.password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return appUserService.generateToken(request.getEmail());
+        return appUserService.generateToken(request.email);
     }
 
     public AppUser register(RegistrationRequest request, ERole role) {
 
-        if(appUserRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new UserAlreadyExistsException(request.getEmail());
+        if(appUserRepository.findByEmail(request.email).isPresent()) {
+            throw new UserAlreadyExistsException(request.email);
         }
 
-        String encodedPassword = AppConfig.passwordEncoder().encode(request.getPassword());
-        return appUserRepository.save(new AppUser(request.getFirstName(), request.getLastName(), request.getEmail(), encodedPassword, roleRepository.findByName(role).orElseThrow(() -> new RuntimeException("Error: Role is not found."))));
+        String encodedPassword = AppConfig.passwordEncoder().encode(request.password);
+        return appUserRepository.save(new AppUser(request.firstName, request.lastName, request.email, encodedPassword, roleRepository.findByName(role).orElseThrow(() -> new RuntimeException("Error: Role is not found."))));
     }
 }

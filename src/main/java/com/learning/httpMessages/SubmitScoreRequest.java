@@ -1,7 +1,6 @@
 package com.learning.httpMessages;
 
 public class SubmitScoreRequest {
-
-    public Long testID;
+    public Long courseID;
     public int score;
 }

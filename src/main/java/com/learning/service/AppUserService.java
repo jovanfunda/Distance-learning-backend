@@ -29,13 +29,6 @@ public class AppUserService implements UserDetailsService {
     private final RoleRepository roleRepository;
     private final JwtUtils jwtUtils;
 
-    public AppUser saveUser(AppUser user) {
-        if(appUserRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new UserAlreadyExistsException(user.getEmail());
-        }
-        return appUserRepository.save(user);
-    }
-
     public AppUser getUser(Long id) {
         Optional<AppUser> user = appUserRepository.findById(id);
         if(user.isEmpty()) {
@@ -65,15 +58,15 @@ public class AppUserService implements UserDetailsService {
         TokenResponse tokenResponse = new TokenResponse();
         UserDetails userDetails = loadUserByUsername(email);
 
-        tokenResponse.setToken(jwtUtils.generateToken(userDetails));
+        tokenResponse.token = jwtUtils.generateToken(userDetails);
         UserDAO user = new UserDAO();
 
         AppUser appUser = appUserRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
-        user.setEmail(email);
-        user.setRole(appUser.getRole().getName());
-        user.setFullName(appUser.getFirstName() + " " + appUser.getLastName());
+        user.email = email;
+        user.role = appUser.getRole().getName();
+        user.fullName = appUser.getFirstName() + " " + appUser.getLastName();
 
-        tokenResponse.setUser(user);
+        tokenResponse.user = user;
 
         return tokenResponse;
     }

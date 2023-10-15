@@ -2,7 +2,7 @@ package com.learning.model.users;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.learning.model.courses.Course;
-import com.learning.model.courses.Enrollment;
+import com.learning.model.courses.enrollment.Enrollment;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -18,8 +18,8 @@ public class Question {
 
     @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "test_id")
-    public Test test;
+    @JoinColumn(name = "course_id")
+    public Course course;
 
     public String question;
     public String rightAnswer;

@@ -22,18 +22,18 @@ public class CourseController {
     private final CourseService courseService;
 
     @GetMapping
-    public ResponseEntity<List<CourseDAO>> getAllCoursesDAO() {
-        return new ResponseEntity<>(courseService.getAllCoursesDAO(), HttpStatus.OK);
+    public ResponseEntity<List<CourseDAO>> getAllCourses() {
+        return new ResponseEntity<>(courseService.getAllCourses(), HttpStatus.OK);
     }
 
-    @GetMapping("/myCourses")
-    public ResponseEntity<List<CourseDAO>> getMyCoursesDAO() {
-        return new ResponseEntity<>(courseService.getMyCoursesDAO(), HttpStatus.OK);
+    @GetMapping("/enrolledCourses")
+    public ResponseEntity<List<CourseDAO>> getEnrolledCourses() {
+        return new ResponseEntity<>(courseService.getEnrolledCourses(), HttpStatus.OK);
     }
 
     @GetMapping("/myOwnCourses")
-    public ResponseEntity<List<CourseDAO>> getMyOwnCoursesDAO() {
-        return new ResponseEntity<>(courseService.getMyOwnCoursesDAO(), HttpStatus.OK);
+    public ResponseEntity<List<CourseDAO>> getMyOwnCourses() {
+        return new ResponseEntity<>(courseService.getMyCourses(), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -68,7 +68,7 @@ public class CourseController {
     }
 
     @PutMapping("/changeData")
-    public ResponseEntity<CourseDAO> changeData(@RequestBody CourseChangeDataRequest request) {
+    public ResponseEntity<CourseDAO> changeCourseData(@RequestBody CourseChangeDataRequest request) {
         return new ResponseEntity<>(courseService.changeData(request), HttpStatus.OK);
     }
 }

@@ -8,8 +8,9 @@ import com.learning.httpMessages.courses.CourseChangeDataRequest;
 import com.learning.httpMessages.courses.CourseOwnershipRequest;
 import com.learning.mappers.CourseMapper;
 import com.learning.model.courses.Course;
-import com.learning.model.courses.Enrollment;
+import com.learning.model.courses.enrollment.Enrollment;
 import com.learning.model.courses.dao.CourseDAO;
+import com.learning.model.courses.enrollment.EnrollmentPK;
 import com.learning.model.users.AppUser;
 import com.learning.repository.AppUserRepository;
 import com.learning.repository.CourseRepository;
@@ -34,19 +35,19 @@ public class CourseService {
     private JwtUtils jwtUtils;
     private CourseMapper courseMapper;
 
-    public List<CourseDAO> getAllCoursesDAO() {
+    public List<CourseDAO> getAllCourses() {
         return courseRepository.findAll().stream().map(courseMapper::toDto).collect(Collectors.toList());
     }
 
-    public List<CourseDAO> getMyCoursesDAO() {
-        AppUser user = appUserRepository.findByEmail(jwtUtils.getCurrentUsername()).orElseThrow(() -> new UsernameNotFoundException("User " + jwtUtils.getCurrentUsername() + " not found!"));
-        List<Long> allCourseIDs = enrollmentRepository.findMyCourses(user.getId());
+    public List<CourseDAO> getEnrolledCourses() {
+        AppUser user = appUserRepository.findByEmail(jwtUtils.getCurrentUsername()).orElseThrow(() -> new UserNotFoundException(jwtUtils.getCurrentUsername()));
+        List<Long> allCourseIDs = enrollmentRepository.getEnrolledCourses(user.getId());
         List<Course> getAllCourses = courseRepository.findAllById(allCourseIDs);
         return getAllCourses.stream().map(courseMapper::toDto).collect(Collectors.toList());
     }
 
-    public List<CourseDAO> getMyOwnCoursesDAO() {
-        AppUser user = appUserRepository.findByEmail(jwtUtils.getCurrentUsername()).orElseThrow(() -> new UsernameNotFoundException("User " + jwtUtils.getCurrentUsername() + " not found!"));
+    public List<CourseDAO> getMyCourses() {
+        AppUser user = appUserRepository.findByEmail(jwtUtils.getCurrentUsername()).orElseThrow(() -> new UserNotFoundException(jwtUtils.getCurrentUsername()));
         List<Course> allCourses = courseRepository.findCoursesByOwnerId(user.getId());
         return allCourses.stream().map(courseMapper::toDto).collect(Collectors.toList());
     }
@@ -76,13 +77,13 @@ public class CourseService {
 
     public void changeOwnership(CourseOwnershipRequest request) {
 
-        Optional<Course> course = courseRepository.findByName(request.getCourseName());
-        Optional<AppUser> newOwner = appUserRepository.findByEmail(request.getNewOwnerEmail());
+        Optional<Course> course = courseRepository.findByName(request.courseName);
+        Optional<AppUser> newOwner = appUserRepository.findByEmail(request.newOwnerEmail);
 
         if(course.isEmpty() ) {
-            throw new CourseNotFoundException(request.getCourseName());
+            throw new CourseNotFoundException(request.courseName);
         } else if(newOwner.isEmpty()) {
-            throw new UserNotFoundException(request.getNewOwnerEmail());
+            throw new UserNotFoundException(request.newOwnerEmail);
         }
 
         course.get().setOwner(newOwner.get());
@@ -91,17 +92,20 @@ public class CourseService {
     public void startEnrollment(String courseName) {
 
         Optional<Course> course = courseRepository.findByName(courseName);
-        Optional<AppUser> user = appUserRepository.findByEmail(jwtUtils.getCurrentUsername());
+        Optional<AppUser> student = appUserRepository.findByEmail(jwtUtils.getCurrentUsername());
 
         if(course.isEmpty()) {
             throw new CourseNotFoundException(courseName);
-        } else if(user.isEmpty()) {
+        } else if(student.isEmpty()) {
             throw new UserNotFoundException(jwtUtils.getCurrentUsername());
         }
 
+        EnrollmentPK pk = new EnrollmentPK();
+        pk.setCourse(course.get());
+        pk.setStudent(student.get());
+
         Enrollment enrollment = new Enrollment();
-        enrollment.setStudent(user.get());
-        enrollment.setCourse(course.get());
+        enrollment.setId(pk);
         enrollment.setScore(0);
 
         enrollmentRepository.save(enrollment);

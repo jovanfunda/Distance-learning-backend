@@ -1,6 +1,6 @@
 package com.learning.model.courses;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.learning.model.courses.enrollment.Enrollment;
 import com.learning.model.users.AppUser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,13 +31,9 @@ public class Course {
     @JoinColumn(name = "owner_id")
     private AppUser owner;
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
-    private List<Enrollment> enrollment = new ArrayList<>();
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Enrollment> enrollments = new ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Lecture> lectures = new ArrayList<>();
-
-    @JsonIgnore
-    @OneToOne(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Test test;
 }

@@ -41,7 +41,7 @@ public class WebSecurityConfig {
                         }))
                 .authorizeHttpRequests(authorize -> {
                     authorize
-                            .requestMatchers("/auth/login", "/api/registration", "/api/registration/admin", "api/course").permitAll()
+                            .requestMatchers("/auth/login", "/api/registration", "api/course").permitAll()
                             .anyRequest().authenticated();
                 })
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);

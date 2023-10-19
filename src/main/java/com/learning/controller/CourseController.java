@@ -31,8 +31,8 @@ public class CourseController {
         return new ResponseEntity<>(courseService.getEnrolledCourses(), HttpStatus.OK);
     }
 
-    @GetMapping("/myOwnCourses")
-    public ResponseEntity<List<CourseDAO>> getMyOwnCourses() {
+    @GetMapping("/myCourses")
+    public ResponseEntity<List<CourseDAO>> getMyCourses() {
         return new ResponseEntity<>(courseService.getMyCourses(), HttpStatus.OK);
     }
 

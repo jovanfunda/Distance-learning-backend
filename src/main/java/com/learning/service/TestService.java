@@ -5,9 +5,11 @@ import com.learning.exception.CourseNotFoundException;
 import com.learning.httpMessages.SubmitScoreRequest;
 import com.learning.httpMessages.courses.CreateTestRequest;
 import com.learning.httpMessages.courses.FinishedTestResponse;
+import com.learning.httpMessages.courses.StudentDataResponse;
 import com.learning.model.courses.Course;
 import com.learning.model.courses.Question;
 import com.learning.model.courses.dao.QuestionDAO;
+import com.learning.model.courses.enrollment.Enrollment;
 import com.learning.model.users.AppUser;
 import com.learning.repository.AppUserRepository;
 import com.learning.repository.CourseRepository;
@@ -79,5 +81,21 @@ public class TestService {
         response.setScore(enrollmentRepository.score(user.getId(), courseID));
         response.setFinishedTest(enrollmentRepository.didFinishTest(user.getId(), courseID));
         return response;
+    }
+
+    public List<StudentDataResponse> getStudentsData(Long courseID) {
+        courseRepository.findById(courseID).orElseThrow(() -> new CourseNotFoundException(courseID.toString()));
+        List<Enrollment> enrollments = enrollmentRepository.getByCourseId(courseID);
+        List<StudentDataResponse> data = new ArrayList<>();
+        for(Enrollment e : enrollments) {
+            StudentDataResponse student = new StudentDataResponse();
+            student.setEmail(e.getStudent().getEmail());
+            student.setName(e.getStudent().getFirstName());
+            student.setLastName(e.getStudent().getLastName());
+            student.setScore(e.getScore());
+            student.setFinishedTest(e.isFinishedCourse());
+            data.add(student);
+        }
+        return data;
     }
 }

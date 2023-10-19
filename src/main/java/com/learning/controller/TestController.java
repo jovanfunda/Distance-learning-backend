@@ -3,6 +3,7 @@ package com.learning.controller;
 import com.learning.httpMessages.SubmitScoreRequest;
 import com.learning.httpMessages.courses.CreateTestRequest;
 import com.learning.httpMessages.courses.FinishedTestResponse;
+import com.learning.httpMessages.courses.StudentDataResponse;
 import com.learning.model.courses.Question;
 import com.learning.service.TestService;
 import lombok.AllArgsConstructor;
@@ -49,5 +50,10 @@ public class TestController {
     @GetMapping("/didFinishTest/{courseID}")
     public ResponseEntity<FinishedTestResponse> didFinishTest(@PathVariable Long courseID) {
         return new ResponseEntity<>(testService.didFinishTest(courseID), HttpStatus.OK);
+    }
+
+    @GetMapping("/data/{courseID}")
+    public ResponseEntity<List<StudentDataResponse>> getStudentsData(@PathVariable Long courseID) {
+        return new ResponseEntity<>(testService.getStudentsData(courseID), HttpStatus.OK);
     }
 }

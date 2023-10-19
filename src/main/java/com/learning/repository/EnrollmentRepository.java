@@ -24,4 +24,6 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 
     @Query("SELECT e.score FROM Enrollment e WHERE e.course.id = :courseID AND e.student.id = :userID")
     int score(@Param("userID") Long userID, @Param("courseID") Long courseID);
+
+    List<Enrollment> getByCourseId(@Param("courseID") Long courseID);
 }

@@ -4,6 +4,7 @@ import com.learning.configuration.JwtUtils;
 import com.learning.exception.CourseNotFoundException;
 import com.learning.httpMessages.SubmitScoreRequest;
 import com.learning.httpMessages.courses.CreateTestRequest;
+import com.learning.httpMessages.courses.FinishedTestResponse;
 import com.learning.model.courses.Course;
 import com.learning.model.courses.Question;
 import com.learning.model.courses.dao.QuestionDAO;
@@ -69,5 +70,14 @@ public class TestService {
 
     public boolean hasTest(Long courseID) {
         return questionRepository.findQuestionsByCourseId(courseID).size() > 0;
+    }
+
+    public FinishedTestResponse didFinishTest(Long courseID) {
+        AppUser user = appUserRepository.findByEmail(jwtUtils.getCurrentUsername()).orElseThrow(() -> new UsernameNotFoundException(jwtUtils.getCurrentUsername()));
+        courseRepository.findById(courseID).orElseThrow(() -> new CourseNotFoundException(courseID.toString()));
+        FinishedTestResponse response = new FinishedTestResponse();
+        response.setScore(enrollmentRepository.score(user.getId(), courseID));
+        response.setFinishedTest(enrollmentRepository.didFinishTest(user.getId(), courseID));
+        return response;
     }
 }

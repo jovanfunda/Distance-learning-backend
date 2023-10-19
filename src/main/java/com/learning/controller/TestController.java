@@ -2,6 +2,7 @@ package com.learning.controller;
 
 import com.learning.httpMessages.SubmitScoreRequest;
 import com.learning.httpMessages.courses.CreateTestRequest;
+import com.learning.httpMessages.courses.FinishedTestResponse;
 import com.learning.model.courses.Question;
 import com.learning.service.TestService;
 import lombok.AllArgsConstructor;
@@ -43,5 +44,10 @@ public class TestController {
     public ResponseEntity<?> submitScore(@RequestBody SubmitScoreRequest request) {
         testService.submitScore(request);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/didFinishTest/{courseID}")
+    public ResponseEntity<FinishedTestResponse> didFinishTest(@PathVariable Long courseID) {
+        return new ResponseEntity<>(testService.didFinishTest(courseID), HttpStatus.OK);
     }
 }

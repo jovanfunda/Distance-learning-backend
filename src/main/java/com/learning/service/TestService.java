@@ -6,6 +6,7 @@ import com.learning.httpMessages.SubmitScoreRequest;
 import com.learning.httpMessages.courses.CreateTestRequest;
 import com.learning.httpMessages.courses.FinishedTestResponse;
 import com.learning.httpMessages.courses.StudentDataResponse;
+import com.learning.httpMessages.courses.TestStartData;
 import com.learning.model.courses.Course;
 import com.learning.model.courses.Question;
 import com.learning.model.courses.dao.QuestionDAO;
@@ -36,11 +37,15 @@ public class TestService {
 
     public List<Question> createTest(CreateTestRequest request) {
         Course course = courseRepository.findById(request.courseID).orElseThrow(() -> new CourseNotFoundException(request.courseID.toString()));
+        request.startDate.setTime(request.startDate.getTime() + convertTimeToMilliseconds(request.time));
+        course.setTestStartDate(request.startDate);
+        courseRepository.save(course);
         return saveQuestions(course, request.questions);
     }
 
     public void deleteTest(Long courseID) {
         Course course = courseRepository.findById(courseID).orElseThrow(() -> new CourseNotFoundException(courseID.toString()));
+        course.setTestStartDate(null);
         questionRepository.deleteByCourseId(courseID);
     }
 
@@ -70,8 +75,12 @@ public class TestService {
         enrollmentRepository.submitScore(request.courseID, request.score, user.getId());
     }
 
-    public boolean hasTest(Long courseID) {
-        return questionRepository.findQuestionsByCourseId(courseID).size() > 0;
+    public TestStartData getTestData(Long courseID) {
+        // vratiti i vreme pocetka testa
+        TestStartData data = new TestStartData();
+        data.setDoesTestExist(questionRepository.findQuestionsByCourseId(courseID).size() > 0);
+        data.setStartDate(courseRepository.findById(courseID).orElseThrow(() -> new CourseNotFoundException(courseID.toString())).getTestStartDate());
+        return data;
     }
 
     public FinishedTestResponse didFinishTest(Long courseID) {
@@ -97,5 +106,16 @@ public class TestService {
             data.add(student);
         }
         return data;
+    }
+
+    public static long convertTimeToMilliseconds(String time) {
+        String[] parts = time.split(":");
+        int hours = Integer.parseInt(parts[0]);
+        int minutes = Integer.parseInt(parts[1]);
+
+        // Calculate the total milliseconds
+        long totalMilliseconds = (hours * 60 + minutes) * 60 * 1000;
+
+        return totalMilliseconds;
     }
 }

@@ -1,6 +1,6 @@
 package com.learning.httpMessages.courses;
 
 public class CourseOwnershipRequest {
-    public String courseName;
+    public Long courseID;
     public String newOwnerEmail;
 }

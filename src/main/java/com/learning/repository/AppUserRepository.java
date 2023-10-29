@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface AppUserRepository extends JpaRepository<AppUser, Long> {
-
-    Optional<AppUser> findByEmail(String email);
+public interface AppUserRepository extends JpaRepository<AppUser, String> {
 
     @Query("SELECT u FROM AppUser u WHERE u.role.name = 'ROLE_ADMIN'")
     List<AppUser> findAllAdmins();

@@ -22,24 +22,23 @@ public class TestController {
     private final TestService testService;
 
     @PostMapping("/create")
-    public ResponseEntity<List<Question>> createTestForCourse(@RequestBody CreateTestRequest request) {
+    public ResponseEntity<List<Question>> createTestForLecture(@RequestBody CreateTestRequest request) {
         return new ResponseEntity<>(testService.createTest(request), HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{courseID}")
-    public ResponseEntity<Void> deleteTest(@PathVariable Long courseID) {
-        testService.deleteTest(courseID);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @GetMapping("/hasTest/{lectureID}")
+    public ResponseEntity<Boolean> doesLectureHaveTest(@PathVariable Long lectureID) {
+        return new ResponseEntity<>(testService.doesLectureHaveTest(lectureID), HttpStatus.OK);
     }
 
-    @GetMapping("/{courseID}")
-    public ResponseEntity<TestStartData> getTestData(@PathVariable Long courseID) {
-        return new ResponseEntity<>(testService.getTestData(courseID), HttpStatus.OK);
+    @GetMapping("/{testID}")
+    public ResponseEntity<TestStartData> getTestData(@PathVariable Long testID) {
+        return new ResponseEntity<>(testService.getTestData(testID), HttpStatus.OK);
     }
 
-    @GetMapping("/questions/{courseID}")
-    public ResponseEntity<List<Question>> getTestQuestions(@PathVariable Long courseID) {
-        return new ResponseEntity<>(testService.getTestQuestions(courseID), HttpStatus.OK);
+    @GetMapping("/questions/{testID}")
+    public ResponseEntity<List<Question>> getTestQuestions(@PathVariable Long testID) {
+        return new ResponseEntity<>(testService.getTestQuestions(testID), HttpStatus.OK);
     }
 
     @PutMapping("/submitScore")
@@ -49,12 +48,18 @@ public class TestController {
     }
 
     @GetMapping("/didFinishTest/{courseID}")
-    public ResponseEntity<FinishedTestResponse> didFinishTest(@PathVariable Long courseID) {
-        return new ResponseEntity<>(testService.didFinishTest(courseID), HttpStatus.OK);
+    public ResponseEntity<FinishedTestResponse> didFinishTest(@PathVariable Long testID) {
+        return new ResponseEntity<>(testService.didFinishTest(testID), HttpStatus.OK);
     }
 
-    @GetMapping("/data/{courseID}")
-    public ResponseEntity<List<StudentDataResponse>> getStudentsData(@PathVariable Long courseID) {
-        return new ResponseEntity<>(testService.getStudentsData(courseID), HttpStatus.OK);
+    @GetMapping("/data/{testID}")
+    public ResponseEntity<List<StudentDataResponse>> getStudentsData(@PathVariable Long testID) {
+        return new ResponseEntity<>(testService.getStudentsData(testID), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{lectureID}")
+    public ResponseEntity<Void> deleteTestWithLectureID(@PathVariable Long lectureID) {
+        testService.deleteTestWithLectureID(lectureID);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

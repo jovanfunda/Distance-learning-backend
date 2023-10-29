@@ -2,6 +2,8 @@ package com.learning.model.users;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.learning.model.courses.Course;
+import com.learning.model.courses.Test;
+import com.learning.model.courses.TestScore;
 import com.learning.model.courses.enrollment.Enrollment;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -20,12 +22,11 @@ import java.util.*;
 public class AppUser implements UserDetails {
 
     @Id
-    @GeneratedValue
-    private Long id;
+    private String email;
 
     private String firstName;
+
     private String lastName;
-    private String email;
 
     @JsonIgnore
     private String password;
@@ -34,20 +35,16 @@ public class AppUser implements UserDetails {
     private Role role;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Course> ownCourses = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Enrollment> enrollments = new ArrayList<>();
 
-    public AppUser(String firstName, String lastName, String email, String password, Role role) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
+    @JsonIgnore
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TestScore> testScores = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

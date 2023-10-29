@@ -17,7 +17,6 @@ import com.learning.repository.CourseRepository;
 import com.learning.repository.EnrollmentRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,30 +39,27 @@ public class CourseService {
     }
 
     public List<CourseDAO> getEnrolledCourses() {
-        AppUser user = appUserRepository.findByEmail(jwtUtils.getCurrentUsername()).orElseThrow(() -> new UserNotFoundException(jwtUtils.getCurrentUsername()));
-        List<Long> allCourseIDs = enrollmentRepository.getEnrolledCourses(user.getId());
+        AppUser user = appUserRepository.findById(jwtUtils.getCurrentUsername()).orElseThrow(() -> new UserNotFoundException(jwtUtils.getCurrentUsername()));
+        List<Long> allCourseIDs = enrollmentRepository.getEnrolledCourses(user.getEmail());
         List<Course> getAllCourses = courseRepository.findAllById(allCourseIDs);
         return getAllCourses.stream().map(courseMapper::toDto).collect(Collectors.toList());
     }
 
     public List<CourseDAO> getMyCourses() {
-        AppUser user = appUserRepository.findByEmail(jwtUtils.getCurrentUsername()).orElseThrow(() -> new UserNotFoundException(jwtUtils.getCurrentUsername()));
-        List<Course> allCourses = courseRepository.findCoursesByOwnerId(user.getId());
+        AppUser user = appUserRepository.findById(jwtUtils.getCurrentUsername()).orElseThrow(() -> new UserNotFoundException(jwtUtils.getCurrentUsername()));
+        List<Course> allCourses = courseRepository.findCoursesByOwnerEmail(user.getEmail());
         return allCourses.stream().map(courseMapper::toDto).collect(Collectors.toList());
     }
 
     public CourseDAO getCourse(Long courseID) {
-        Optional<Course> course = courseRepository.findById(courseID);
-        if(course.isEmpty())
-            throw new CourseNotFoundException(courseID.toString());
-        return courseMapper.toDto(courseRepository.findById(courseID).get());
+        Course course = courseRepository.findById(courseID).orElseThrow(() -> new CourseNotFoundException(courseID));
+        return courseMapper.toDto(course);
     }
 
     public Course createCourse(String courseName) {
-
-        if(courseRepository.findByName(courseName).isPresent()) {
+        courseRepository.findByName(courseName).ifPresent(c -> {
             throw new CourseAlreadyExistsException(courseName);
-        }
+        });
 
         Course course = new Course();
         course.setName(courseName);
@@ -71,48 +67,31 @@ public class CourseService {
     }
 
     public void deleteCourse(Long courseID) {
-        Optional<Course> course = courseRepository.findById(courseID);
-        course.ifPresent(value -> courseRepository.delete(value));
+        courseRepository.deleteById(courseID);
     }
 
     public void changeOwnership(CourseOwnershipRequest request) {
-
-        Optional<Course> course = courseRepository.findByName(request.courseName);
-        Optional<AppUser> newOwner = appUserRepository.findByEmail(request.newOwnerEmail);
-
-        if(course.isEmpty() ) {
-            throw new CourseNotFoundException(request.courseName);
-        } else if(newOwner.isEmpty()) {
-            throw new UserNotFoundException(request.newOwnerEmail);
-        }
-
-        course.get().setOwner(newOwner.get());
+        Course course = courseRepository.findById(request.courseID).orElseThrow(() -> new CourseNotFoundException(request.courseID));
+        AppUser newOwner = appUserRepository.findById(request.newOwnerEmail).orElseThrow(() -> new UserNotFoundException(request.newOwnerEmail));
+        course.setOwner(newOwner);
     }
 
-    public void startEnrollment(String courseName) {
-
-        Optional<Course> course = courseRepository.findByName(courseName);
-        Optional<AppUser> student = appUserRepository.findByEmail(jwtUtils.getCurrentUsername());
-
-        if(course.isEmpty()) {
-            throw new CourseNotFoundException(courseName);
-        } else if(student.isEmpty()) {
-            throw new UserNotFoundException(jwtUtils.getCurrentUsername());
-        }
+    public void startEnrollment(Long courseID) {
+        Course course = courseRepository.findById(courseID).orElseThrow(() -> new CourseNotFoundException(courseID));
+        AppUser student = appUserRepository.findById(jwtUtils.getCurrentUsername()).orElseThrow(() -> new UserNotFoundException(jwtUtils.getCurrentUsername()));
 
         EnrollmentPK pk = new EnrollmentPK();
-        pk.setCourse(course.get());
-        pk.setStudent(student.get());
+        pk.setCourse(course);
+        pk.setStudent(student);
 
         Enrollment enrollment = new Enrollment();
         enrollment.setId(pk);
-        enrollment.setScore(0);
 
         enrollmentRepository.save(enrollment);
     }
 
     public CourseDAO changeData(CourseChangeDataRequest request) {
-        Course course = courseRepository.findById(request.courseID).orElseThrow(() -> new CourseNotFoundException(request.courseID.toString()));
+        Course course = courseRepository.findById(request.courseID).orElseThrow(() -> new CourseNotFoundException(request.courseID));
         course.setDescription(request.courseDescription);
         course.setPictureURL(request.coursePictureURL);
         return courseMapper.toDto(course);

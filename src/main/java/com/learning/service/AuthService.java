@@ -35,12 +35,17 @@ public class AuthService {
     }
 
     public AppUser register(RegistrationRequest request, ERole role) {
+        appUserRepository.findById(request.email).ifPresent(user -> {
+            throw new UserAlreadyExistsException(user.getEmail());
+        });
 
-        if(appUserRepository.findByEmail(request.email).isPresent()) {
-            throw new UserAlreadyExistsException(request.email);
-        }
-
-        String encodedPassword = AppConfig.passwordEncoder().encode(request.password);
-        return appUserRepository.save(new AppUser(request.firstName, request.lastName, request.email, encodedPassword, roleRepository.findByName(role).orElseThrow(() -> new RuntimeException("Error: Role is not found."))));
+        AppUser newUser = new AppUser();
+        newUser.setFirstName(request.firstName);
+        newUser.setLastName(request.lastName);
+        newUser.setEmail(request.email);
+        newUser.setPassword(AppConfig.passwordEncoder().encode(request.password));
+        newUser.setRole(roleRepository.findByName(role).orElseThrow(() -> new RuntimeException("Error: Role is not found.")));
+        appUserRepository.save(newUser);
+        return newUser;
     }
 }

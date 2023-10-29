@@ -23,8 +23,11 @@ public class Lecture {
 
     private String data;
 
+    @OneToOne
+    @JoinColumn(name = "test_id")
+    private Test test;
+
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
-
 }

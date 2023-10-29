@@ -19,7 +19,7 @@ public class EnrollmentPK implements Serializable {
     private Course course;
 
     @ManyToOne
-    @JoinColumn(name = "student_id")
+    @JoinColumn(name = "student_email")
     private AppUser student;
 
     @Override
@@ -27,7 +27,7 @@ public class EnrollmentPK implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         EnrollmentPK that = (EnrollmentPK) o;
-        return Objects.equals(course.getId(), that.course.getId()) && Objects.equals(student.getId(), that.student.getId());
+        return Objects.equals(course.getId(), that.course.getId()) && Objects.equals(student.getEmail(), that.student.getEmail());
     }
 
     @Override

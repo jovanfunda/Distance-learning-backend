@@ -1,12 +1,10 @@
 package com.learning.httpMessages.courses;
 
-import lombok.Data;
 
-@Data
 public class StudentDataResponse {
-    String name;
-    String lastName;
-    String email;
-    int score;
-    boolean finishedTest;
+    public String name;
+    public String lastName;
+    public String email;
+    public int score;
+    public boolean finishedTest;
 }

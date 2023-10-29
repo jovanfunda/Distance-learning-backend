@@ -21,7 +21,8 @@ public class ExceptionHandlerController {
     @ExceptionHandler({
             UserNotFoundException.class,
             CourseNotFoundException.class,
-            QuestionNotFoundException.class
+            TestNotFoundException.class,
+            LectureNotFoundException.class
     })
     public ResponseEntity<?> handleNotFoundExceptions(Exception exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
@@ -29,7 +30,7 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler({
             CourseAlreadyExistsException.class,
-            UserAlreadyExistsException.class
+            UserAlreadyExistsException.class,
     })
     public ResponseEntity<?> handleConflictExceptions(Exception exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);

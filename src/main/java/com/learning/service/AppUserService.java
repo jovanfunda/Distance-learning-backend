@@ -17,7 +17,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @Service
@@ -29,12 +28,8 @@ public class AppUserService implements UserDetailsService {
     private final RoleRepository roleRepository;
     private final JwtUtils jwtUtils;
 
-    public AppUser getUser(Long id) {
-        Optional<AppUser> user = appUserRepository.findById(id);
-        if(user.isEmpty()) {
-            throw new UserNotFoundException(id.toString());
-        }
-        return user.get();
+    public AppUser getUser(String email) {
+        return appUserRepository.findById(email).orElseThrow(() -> new UserNotFoundException(email));
     }
 
     public List<AppUser> getUsers() {
@@ -50,7 +45,7 @@ public class AppUserService implements UserDetailsService {
     }
 
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return appUserRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
+        return appUserRepository.findById(email).orElseThrow(() -> new UsernameNotFoundException(email));
     }
 
     public TokenResponse generateToken(String email) {
@@ -61,7 +56,7 @@ public class AppUserService implements UserDetailsService {
         tokenResponse.token = jwtUtils.generateToken(userDetails);
         UserDAO user = new UserDAO();
 
-        AppUser appUser = appUserRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
+        AppUser appUser = appUserRepository.findById(email).orElseThrow(() -> new UsernameNotFoundException(email));
         user.email = email;
         user.role = appUser.getRole().getName();
         user.fullName = appUser.getFirstName() + " " + appUser.getLastName();
@@ -72,13 +67,13 @@ public class AppUserService implements UserDetailsService {
     }
 
     public AppUser removeAdminPermission(String email) {
-        AppUser user = appUserRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
+        AppUser user = appUserRepository.findById(email).orElseThrow(() -> new UserNotFoundException(email));
         user.setRole(roleRepository.findByName(ERole.ROLE_REGULAR).get());
         return user;
     }
 
     public AppUser promoteToAdmin(String email) {
-        AppUser user = appUserRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
+        AppUser user = appUserRepository.findById(email).orElseThrow(() -> new UserNotFoundException(email));
         user.setRole(roleRepository.findByName(ERole.ROLE_ADMIN).get());
         return user;
     }

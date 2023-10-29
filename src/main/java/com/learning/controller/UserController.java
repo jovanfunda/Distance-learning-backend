@@ -34,8 +34,8 @@ public class UserController {
     }
 
     @GetMapping("/user/{userID}")
-    public ResponseEntity<AppUser> getUser(@PathVariable Long userID) {
-        return new ResponseEntity<>(userService.getUser(userID), HttpStatus.OK);
+    public ResponseEntity<AppUser> getUser(@PathVariable String email) {
+        return new ResponseEntity<>(userService.getUser(email), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

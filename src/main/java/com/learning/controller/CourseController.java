@@ -62,8 +62,8 @@ public class CourseController {
     }
 
     @PutMapping("/startEnrollment")
-    public ResponseEntity<Void> startEnrollment(@RequestBody String courseName) {
-        courseService.startEnrollment(courseName);
+    public ResponseEntity<Void> startEnrollment(@RequestBody Long courseID) {
+        courseService.startEnrollment(courseID);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

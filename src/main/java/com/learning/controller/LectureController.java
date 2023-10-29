@@ -1,8 +1,8 @@
 package com.learning.controller;
 
 import com.learning.httpMessages.courses.LectureCreationRequest;
-import com.learning.model.courses.Lecture;
 import com.learning.model.courses.dao.LectureDAO;
+import com.learning.model.courses.dao.LectureResponseDAO;
 import com.learning.service.LectureService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,7 +25,7 @@ public class LectureController {
     }
 
     @GetMapping("/{courseID}")
-    public ResponseEntity<List<LectureDAO>> getLecturesByCourseID(@PathVariable Long courseID) {
+    public ResponseEntity<List<LectureResponseDAO>> getLecturesByCourseID(@PathVariable Long courseID) {
         return new ResponseEntity<>(lectureService.getLecturesByCourseID(courseID), HttpStatus.OK);
     }
 }

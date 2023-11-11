@@ -22,7 +22,8 @@ public class ExceptionHandlerController {
             UserNotFoundException.class,
             CourseNotFoundException.class,
             TestNotFoundException.class,
-            LectureNotFoundException.class
+            LectureNotFoundException.class,
+            RoleNotFoundException.class
     })
     public ResponseEntity<?> handleNotFoundExceptions(Exception exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);

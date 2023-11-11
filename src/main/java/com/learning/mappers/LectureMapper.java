@@ -14,6 +14,8 @@ public class LectureMapper {
         dao.data = entity.getData();
         dao.title = entity.getTitle();
         dao.videoURL = entity.getVideoURL();
+        if(entity.getTest() != null)
+            dao.testID = entity.getTest().getId();
         return dao;
     }
 }

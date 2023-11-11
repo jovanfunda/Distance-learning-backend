@@ -1,6 +1,8 @@
-package com.learning.model.courses;
+package com.learning.model.courses.testScore;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.learning.model.courses.Test;
+import com.learning.model.courses.enrollment.EnrollmentPK;
 import com.learning.model.users.AppUser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,15 +15,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TestScore {
 
-    @Id
-    @GeneratedValue
-    Long id;
+    @EmbeddedId
+    private TestScorePK id;
 
     @ManyToOne
-    @JoinColumn(name = "student_id")
+    @MapsId("course")
+    @JoinColumn(name = "student_email")
     AppUser student;
 
     @ManyToOne
+    @MapsId("course")
     @JoinColumn(name = "test_id")
     Test test;
 

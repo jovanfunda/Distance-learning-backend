@@ -4,13 +4,18 @@ import com.learning.configuration.JwtUtils;
 import com.learning.exception.CourseNotFoundException;
 import com.learning.exception.LectureNotFoundException;
 import com.learning.exception.TestNotFoundException;
+import com.learning.httpMessages.CourseScoringDataResponse;
 import com.learning.httpMessages.SubmitScoreRequest;
 import com.learning.httpMessages.courses.CreateTestRequest;
 import com.learning.httpMessages.courses.FinishedTestResponse;
 import com.learning.httpMessages.courses.StudentDataResponse;
 import com.learning.httpMessages.courses.TestStartData;
 import com.learning.model.courses.*;
+import com.learning.model.courses.dao.LectureScoringDAO;
 import com.learning.model.courses.dao.QuestionDAO;
+import com.learning.model.courses.enrollment.Enrollment;
+import com.learning.model.courses.testScore.TestScore;
+import com.learning.model.courses.testScore.TestScorePK;
 import com.learning.model.users.AppUser;
 import com.learning.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +37,7 @@ public class TestService {
     private final AppUserRepository appUserRepository;
     private final TestRepository testRepository;
     private final TestScoreRepository testScoreRepository;
+    private final CourseRepository courseRepository;
     private final JwtUtils jwtUtils;
 
     public List<Question> createTest(CreateTestRequest request) {
@@ -69,11 +76,38 @@ public class TestService {
         AppUser student = appUserRepository.findById(jwtUtils.getCurrentUsername()).orElseThrow(() -> new UsernameNotFoundException(jwtUtils.getCurrentUsername()));
         Lecture lecture = lectureRepository.findById(request.lectureID).orElseThrow(() -> new LectureNotFoundException(request.lectureID));
         TestScore testScore = new TestScore();
+        TestScorePK pk = new TestScorePK();
+        pk.setStudent(student);
+        pk.setTest(lecture.getTest());
+        testScore.setId(pk);
         testScore.setFinished(true);
         testScore.setScore(request.score);
-        testScore.setStudent(student);
-        testScore.setTest(lecture.getTest());
         testScoreRepository.save(testScore);
+    }
+
+    public CourseScoringDataResponse getScoringData(Long courseID) {
+        Course course = courseRepository.findById(courseID).orElseThrow(() -> new CourseNotFoundException(courseID));
+        CourseScoringDataResponse response = new CourseScoringDataResponse();
+        response.lectures = new ArrayList<>();
+
+        for(Lecture lecture : course.getLectures()) {
+            for(Enrollment enrollment : course.getEnrollments()) {
+                AppUser student = enrollment.getStudent();
+
+                LectureScoringDAO lectureDAO = new LectureScoringDAO();
+                lectureDAO.setLectureTitle(lecture.getTitle());
+                lectureDAO.setStudentEmail(student.getEmail());
+                if(lecture.getTest() != null) {
+                    Optional<TestScore> ts = testScoreRepository.findByStudentEmailAndTestId(student.getEmail(), lecture.getTest().getId());
+                    lectureDAO.setScore(null);
+                    ts.ifPresent(testScore -> lectureDAO.setScore(testScore.getScore()));
+
+                }
+                response.getLectures().add(lectureDAO);
+            }
+        }
+
+        return response;
     }
 
     public TestStartData getTestData(Long testID) {
@@ -93,23 +127,6 @@ public class TestService {
         return response;
     }
 
-    public List<StudentDataResponse> getStudentsData(Long testID) {
-//        Test test = testRepository.findById(testID).orElseThrow(() -> new TestNotFoundException(testID.toString()));
-//        List<Enrollment> enrollments = enrollmentRepository.getByTestId(testID);
-//        List<StudentDataResponse> data = new ArrayList<>();
-//        for(Enrollment e : enrollments) {
-//            StudentDataResponse student = new StudentDataResponse();
-//            student.setEmail(e.getStudent().getEmail());
-//            student.setName(e.getStudent().getFirstName());
-//            student.setLastName(e.getStudent().getLastName());
-//            student.setScore(e.getScore());
-//            student.setFinishedTest(e.isFinishedCourse());
-//            data.add(student);
-//        }
-//        return data;
-        return null;
-    }
-
     public boolean doesLectureHaveTest(Long lectureID) {
         return lectureRepository.findById(lectureID).orElseThrow(() -> new LectureNotFoundException(lectureID)).getTest() != null;
     }
@@ -120,7 +137,7 @@ public class TestService {
         lecture.setTest(null);
     }
 
-    public static long convertTimeToMilliseconds(String time) {
+    private static long convertTimeToMilliseconds(String time) {
         String[] parts = time.split(":");
         int hours = Integer.parseInt(parts[0]);
         int minutes = Integer.parseInt(parts[1]);

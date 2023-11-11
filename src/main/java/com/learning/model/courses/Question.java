@@ -17,7 +17,7 @@ public class Question {
     public Long id;
 
     @JsonIgnore
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "test_id")
     public Test test;
 

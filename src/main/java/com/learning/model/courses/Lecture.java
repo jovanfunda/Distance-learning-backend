@@ -1,5 +1,6 @@
 package com.learning.model.courses;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class Lecture {
     private Test test;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "course_id")
     private Course course;
 }

@@ -1,7 +1,7 @@
 package com.learning.model.courses;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.learning.model.users.AppUser;
+import com.learning.model.courses.testScore.TestScore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,13 +25,15 @@ public class Test {
     private Date testStartDate;
 
     @OneToOne
+    @JsonIgnore
     @JoinColumn(name = "lecture_id")
     private Lecture lecture;
 
-    @OneToMany(mappedBy = "test", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "test", cascade = CascadeType.ALL)
     private List<Question> questions = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "test", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "test", cascade = CascadeType.ALL)
     private List<TestScore> testScores = new ArrayList<>();
 }

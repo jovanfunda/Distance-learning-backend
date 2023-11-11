@@ -1,5 +1,6 @@
 package com.learning.controller;
 
+import com.learning.httpMessages.StudentCourseScore;
 import com.learning.httpMessages.courses.CourseChangeDataRequest;
 import com.learning.httpMessages.courses.CourseOwnershipRequest;
 import com.learning.model.courses.Course;
@@ -70,5 +71,15 @@ public class CourseController {
     @PutMapping("/changeData")
     public ResponseEntity<CourseDAO> changeCourseData(@RequestBody CourseChangeDataRequest request) {
         return new ResponseEntity<>(courseService.changeData(request), HttpStatus.OK);
+    }
+
+    @GetMapping("/getEnrolledStudents/{courseID}")
+    public ResponseEntity<List<String>> getEnrolledStudents(@PathVariable Long courseID) {
+        return new ResponseEntity<>(courseService.getEnrolledStudents(courseID), HttpStatus.OK);
+    }
+
+    @GetMapping("/getAllScores")
+    public ResponseEntity<StudentCourseScore> getAllScores(@RequestParam String email, @RequestParam Long courseID) {
+        return new ResponseEntity<>(courseService.getAllScores(email, courseID), HttpStatus.OK);
     }
 }

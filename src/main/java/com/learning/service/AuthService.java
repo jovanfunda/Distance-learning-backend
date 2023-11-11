@@ -1,6 +1,7 @@
 package com.learning.service;
 
 import com.learning.configuration.AppConfig;
+import com.learning.exception.RoleNotFoundException;
 import com.learning.exception.UserAlreadyExistsException;
 import com.learning.httpMessages.RegistrationRequest;
 import com.learning.httpMessages.security.TokenRequest;
@@ -44,7 +45,7 @@ public class AuthService {
         newUser.setLastName(request.lastName);
         newUser.setEmail(request.email);
         newUser.setPassword(AppConfig.passwordEncoder().encode(request.password));
-        newUser.setRole(roleRepository.findByName(role).orElseThrow(() -> new RuntimeException("Error: Role is not found.")));
+        newUser.setRole(roleRepository.findByName(role).orElseThrow(() -> new RoleNotFoundException(role.name())));
         appUserRepository.save(newUser);
         return newUser;
     }

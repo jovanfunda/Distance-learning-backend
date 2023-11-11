@@ -2,13 +2,11 @@ package com.learning.service;
 
 import com.learning.configuration.JwtUtils;
 import com.learning.exception.CourseNotFoundException;
-import com.learning.exception.UserNotFoundException;
 import com.learning.httpMessages.courses.LectureCreationRequest;
 import com.learning.mappers.LectureMapper;
 import com.learning.model.courses.Course;
 import com.learning.model.courses.Lecture;
-import com.learning.model.courses.Test;
-import com.learning.model.courses.TestScore;
+import com.learning.model.courses.testScore.TestScore;
 import com.learning.model.courses.dao.LectureDAO;
 import com.learning.model.courses.dao.LectureResponseDAO;
 import com.learning.repository.*;
@@ -25,16 +23,13 @@ import java.util.Optional;
 @Transactional
 public class LectureService {
 
-    private final AppUserRepository userRepository;
     private final LectureRepository lectureRepository;
     private final CourseRepository courseRepository;
-    private final TestRepository testRepository;
     private final TestScoreRepository testScoreRepository;
     private final LectureMapper lectureMapper;
     private JwtUtils jwtUtils;
 
     public LectureDAO createLecture(LectureCreationRequest request) throws CourseNotFoundException{
-
         Course course = courseRepository.findById(request.courseID).orElseThrow(() -> new CourseNotFoundException(request.courseID));
 
         Lecture lecture = new Lecture();
@@ -46,20 +41,19 @@ public class LectureService {
     }
 
     public List<LectureResponseDAO> getLecturesByCourseID(Long courseID) {
-        courseRepository.findById(courseID).orElseThrow(() -> new CourseNotFoundException(courseID));
-        List<LectureDAO> lectureDAOList = lectureRepository.findLectureByCourseID(courseID);
+        Course course = courseRepository.findById(courseID).orElseThrow(() -> new CourseNotFoundException(courseID));
+        List<Lecture> lectures = course.getLectures();
         List<LectureResponseDAO> responseList = new ArrayList<>();
-        for(LectureDAO item : lectureDAOList) {
+        for(Lecture item : lectures) {
             LectureResponseDAO lecture = new LectureResponseDAO();
-            lecture.setId(item.id);
-            lecture.setTitle(item.title);
-            lecture.setVideoURL(item.videoURL);
-            lecture.setData(item.data);
-            Optional<Test> test = testRepository.findByLectureId(item.id);
-            if(test.isPresent()) {
+            lecture.setId(item.getId());
+            lecture.setTitle(item.getTitle());
+            lecture.setVideoURL(item.getVideoURL());
+            lecture.setData(item.getData());
+            if(item.getTest() != null) {
                 lecture.setHasTest(true);
-                lecture.setTestStartDate(test.get().getTestStartDate());
-                Optional<TestScore> ts = testScoreRepository.findByStudentEmailAndTestId(jwtUtils.getCurrentUsername(), test.get().getId());
+                lecture.setTestStartDate(item.getTest().getTestStartDate());
+                Optional<TestScore> ts = testScoreRepository.findByStudentEmailAndTestId(jwtUtils.getCurrentUsername(), item.getTest().getId());
                 if(ts.isPresent()) {
                     lecture.setTestFinished(ts.get().isFinished());
                     lecture.setScore(ts.get().getScore());

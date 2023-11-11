@@ -1,6 +1,6 @@
 package com.learning.repository;
 
-import com.learning.model.courses.TestScore;
+import com.learning.model.courses.testScore.TestScore;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

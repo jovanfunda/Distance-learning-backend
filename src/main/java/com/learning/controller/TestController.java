@@ -1,5 +1,6 @@
 package com.learning.controller;
 
+import com.learning.httpMessages.CourseScoringDataResponse;
 import com.learning.httpMessages.SubmitScoreRequest;
 import com.learning.httpMessages.courses.CreateTestRequest;
 import com.learning.httpMessages.courses.FinishedTestResponse;
@@ -31,6 +32,11 @@ public class TestController {
         return new ResponseEntity<>(testService.doesLectureHaveTest(lectureID), HttpStatus.OK);
     }
 
+    @GetMapping("/scores/{courseID}")
+    public ResponseEntity<CourseScoringDataResponse> getScoringData(@PathVariable Long courseID) {
+        return new ResponseEntity<>(testService.getScoringData(courseID), HttpStatus.OK);
+    }
+
     @GetMapping("/{testID}")
     public ResponseEntity<TestStartData> getTestData(@PathVariable Long testID) {
         return new ResponseEntity<>(testService.getTestData(testID), HttpStatus.OK);
@@ -50,11 +56,6 @@ public class TestController {
     @GetMapping("/didFinishTest/{courseID}")
     public ResponseEntity<FinishedTestResponse> didFinishTest(@PathVariable Long testID) {
         return new ResponseEntity<>(testService.didFinishTest(testID), HttpStatus.OK);
-    }
-
-    @GetMapping("/data/{testID}")
-    public ResponseEntity<List<StudentDataResponse>> getStudentsData(@PathVariable Long testID) {
-        return new ResponseEntity<>(testService.getStudentsData(testID), HttpStatus.OK);
     }
 
     @DeleteMapping("/{lectureID}")

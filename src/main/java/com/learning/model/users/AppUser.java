@@ -2,8 +2,7 @@ package com.learning.model.users;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.learning.model.courses.Course;
-import com.learning.model.courses.Test;
-import com.learning.model.courses.TestScore;
+import com.learning.model.courses.testScore.TestScore;
 import com.learning.model.courses.enrollment.Enrollment;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -35,15 +34,15 @@ public class AppUser implements UserDetails {
     private Role role;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<Course> ownCourses = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<Enrollment> enrollments = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<TestScore> testScores = new ArrayList<>();
 
     @Override

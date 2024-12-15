@@ -4,7 +4,6 @@ import com.learning.httpMessages.CourseScoringDataResponse;
 import com.learning.httpMessages.SubmitScoreRequest;
 import com.learning.httpMessages.courses.CreateTestRequest;
 import com.learning.httpMessages.courses.FinishedTestResponse;
-import com.learning.httpMessages.courses.StudentDataResponse;
 import com.learning.httpMessages.courses.TestStartData;
 import com.learning.model.courses.Question;
 import com.learning.service.TestService;
@@ -61,6 +60,6 @@ public class TestController {
     @DeleteMapping("/{lectureID}")
     public ResponseEntity<Void> deleteTestWithLectureID(@PathVariable Long lectureID) {
         testService.deleteTestWithLectureID(lectureID);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

@@ -14,8 +14,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @Configuration
@@ -36,14 +34,16 @@ public class WebSecurityConfig {
                 .cors(cors -> cors
                         .configurationSource(request -> {
                             CorsConfiguration config = new CorsConfiguration();
-                            config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
-                            config.setAllowedMethods(Collections.singletonList("*"));
-                            config.setAllowedHeaders(Collections.singletonList("*"));
+                            config.setAllowedOrigins(List.of("http://localhost:4200", "http://192.168.1.108:4200"));
+                            config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                            config.setAllowedHeaders(List.of("*"));
+                            config.setAllowCredentials(true);
                             return config;
-                        }))
+                        })
+                )
                 .authorizeHttpRequests(authorize -> {
                     authorize
-                            .requestMatchers("/auth/login", "/api/registration", "api/course").permitAll()
+                            .requestMatchers("/auth/login", "/api/registration", "/api/course").permitAll()
                             .anyRequest().authenticated();
                 })
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);

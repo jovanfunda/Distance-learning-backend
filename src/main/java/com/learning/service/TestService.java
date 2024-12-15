@@ -8,7 +8,6 @@ import com.learning.httpMessages.CourseScoringDataResponse;
 import com.learning.httpMessages.SubmitScoreRequest;
 import com.learning.httpMessages.courses.CreateTestRequest;
 import com.learning.httpMessages.courses.FinishedTestResponse;
-import com.learning.httpMessages.courses.StudentDataResponse;
 import com.learning.httpMessages.courses.TestStartData;
 import com.learning.model.courses.*;
 import com.learning.model.courses.dao.LectureScoringDAO;
